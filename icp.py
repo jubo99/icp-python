@@ -12,25 +12,32 @@ pcd_rot = o3d.io.read_point_cloud("out.ply")
 color_og = [1.0, 0.0, 0.0]  # RGB-color-value (0 to 1)
 # color transformed pcl
 pcd_rot.paint_uniform_color(color_og)
-o3d.visualization.draw_geometries([pcd, pcd_rot])
+# o3d.visualization.draw_geometries([pcd, pcd_rot])
 
 # every x-th row will be taken for ICP
-x = 100
+x = 5
 # Convert Points to Numpy array
 pcd_points = np.asanyarray(pcd.points)
 pcd_points = pcd_points[::x, :]
 pcd_rot_points = np.asanyarray(pcd_rot.points)
 pcd_rot_points = pcd_rot_points[::x, :]
 rot_length = pcd_rot_points.shape[0]
+
+#Add noise to point cloud
+noise_level = 0.4
+# Add random noise to all points
+pcd_noise = pcd_rot_points + noise_level * np.random.randn(rot_length, 3)
+
+
 total_time = 0
 # Run ICP
 start = time.time()
-T, distances, iterations = icp_git.icp(pcd_rot_points, pcd_points, tolerance=0.000001)
+T, distances, iterations = icp_git.icp(pcd_noise, pcd_points, tolerance=0.000001)
 total_time += time.time() - start
 
 # Make C a homogeneous representation of B
 C = np.ones((rot_length, 4))
-C[:, 0:3] = np.copy(pcd_rot_points)
+C[:, 0:3] = np.copy(pcd_noise)
 
 # Transform C
 C = np.dot(T, C.T).T
