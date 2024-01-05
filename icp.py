@@ -2,20 +2,33 @@ import time
 import open3d as o3d
 import numpy as np
 import icp_git
+import json
 
 
-input_file_path = "bmw_manifold_ply_1/BMW Manifold.ply"
-pcd = o3d.io.read_point_cloud(input_file_path)
-pcd_rot = o3d.io.read_point_cloud("out.ply")
+# Read in config-file
+with open('config.json', 'r') as file:
+    config_data = json.load(file)
 
-# set color
-color_og = [1.0, 0.0, 0.0]  # RGB-color-value (0 to 1)
+# Access Config Values
+database_host = config_data['database']['host']
+database_port = config_data['database']['port']
+down_sampling_rate = config_data['down_sampling_rate']
+noise_level = config_data['noise_level']
+data_path_template = config_data['data_path_template']
+data_path_recording = config_data['data_path_recording']
+color = config_data['color']
+
+#Read in PCLs
+pcd = o3d.io.read_point_cloud(data_path_template)
+pcd_rot = o3d.io.read_point_cloud(data_path_recording)
+
+
 # color transformed pcl
-pcd_rot.paint_uniform_color(color_og)
+pcd_rot.paint_uniform_color(color)
 # o3d.visualization.draw_geometries([pcd, pcd_rot])
 
 # every x-th row will be taken for ICP
-x = 5
+x = down_sampling_rate
 # Convert Points to Numpy array
 pcd_points = np.asanyarray(pcd.points)
 pcd_points = pcd_points[::x, :]
@@ -23,8 +36,6 @@ pcd_rot_points = np.asanyarray(pcd_rot.points)
 pcd_rot_points = pcd_rot_points[::x, :]
 rot_length = pcd_rot_points.shape[0]
 
-#Add noise to point cloud
-noise_level = 0.4
 # Add random noise to all points
 pcd_noise = pcd_rot_points + noise_level * np.random.randn(rot_length, 3)
 
@@ -32,7 +43,7 @@ pcd_noise = pcd_rot_points + noise_level * np.random.randn(rot_length, 3)
 total_time = 0
 # Run ICP
 start = time.time()
-T, distances, iterations = icp_git.icp(pcd_noise, pcd_points, tolerance=0.000001)
+T, distances, iterations = icp_git.icp(pcd_noise, pcd_points, tolerance=0.001)
 total_time += time.time() - start
 
 # Make C a homogeneous representation of B
@@ -50,8 +61,6 @@ transformed_pcl = np.delete(C, 3, axis=1)
 point_cloud = o3d.geometry.PointCloud()
 point_cloud.points = o3d.utility.Vector3dVector(transformed_pcl)
 
-# set color
-color = [1.0, 0.0, 0.0]  # RGB-color-value (0 to 1)
 
 # color transformed pcl
 point_cloud.paint_uniform_color(color)

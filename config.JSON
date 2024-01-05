@@ -1,0 +1,14 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 3306,
+    "username": "clrblnd",
+    "password": "1234",
+    "database_name": "databasename"
+  },
+  "down_sampling_rate": 25,
+  "noise_level": 0.3,
+  "data_path_template": "bmw_manifold_ply_1/BMW Manifold.ply",
+  "data_path_recording": "out.ply",
+  "color": [1.0, 0.0, 0.0]
+}
