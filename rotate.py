@@ -28,7 +28,7 @@ def main():
     point_cloud = o3d.io.read_point_cloud(input_file_path)
 
     # Define rotation matrix (example: 45 degrees around the Z-axis)
-    angle_degrees = 10.0
+    angle_degrees = 20.0
     angle_radians = np.radians(angle_degrees)
     rotation_matrix = np.array([[np.cos(angle_radians), -np.sin(angle_radians), 0],
                                 [np.sin(angle_radians), np.cos(angle_radians), 0],
