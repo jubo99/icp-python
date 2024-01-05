@@ -1,0 +1,5 @@
+# Ignore the virtual environment folder
+venv/
+
+# Ignore log files
+*.ply
