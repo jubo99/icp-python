@@ -2,6 +2,10 @@ import numpy as np
 from sklearn.neighbors import NearestNeighbors
 
 
+"""
+Source: https://github.com/ClayFlannigan/icp.git
+"""
+
 def best_fit_transform(A, B):
     """
     Calculates the least-squares best-fit transform that maps corresponding points A to B in m spatial dimensions
