@@ -25,7 +25,7 @@ pcd_rot = o3d.io.read_point_cloud(data_path_recording)
 
 # color transformed pcl
 pcd_rot.paint_uniform_color(color)
-# o3d.visualization.draw_geometries([pcd, pcd_rot])
+o3d.visualization.draw_geometries([pcd, pcd_rot])
 
 # every x-th row will be taken for ICP
 x = down_sampling_rate
